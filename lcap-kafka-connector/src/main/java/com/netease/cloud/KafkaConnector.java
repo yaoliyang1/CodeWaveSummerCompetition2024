@@ -85,6 +85,10 @@ public class KafkaConnector {
      */
     @NaslConnector.Creator
     public KafkaConnector initBean(String bootstrapServers, String securityProtocol, String saslMechanism, String username, String password) {
+        securityProtocol = normalizeEmpty(securityProtocol);
+        saslMechanism = normalizeEmpty(saslMechanism);
+        username = normalizeEmpty(username);
+        password = normalizeEmpty(password);
         Properties properties = buildProperties(bootstrapServers, securityProtocol, saslMechanism, username, password);
         KafkaConnector kafkaConnector = new KafkaConnector();
         kafkaConnector.bootstrapServers = bootstrapServers;
@@ -501,6 +505,16 @@ public class KafkaConnector {
         }
 
         return properties;
+    }
+
+    private String normalizeEmpty(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        if ("\"\"".equals(value)) {
+            return null;
+        }
+        return value;
     }
 
     public void close() {
